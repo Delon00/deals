@@ -17,18 +17,18 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Acheter',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon name={focused ? 'bag' : 'bag-sharp'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="vendre"
         options={{
-          title: 'Explore',
+          title: 'Vendre',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'pricetags' : 'pricetags-sharp'} color={color} />
           ),
         }}
       />
