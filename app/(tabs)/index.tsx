@@ -1,12 +1,16 @@
-import { Image, StyleSheet, Platform, Text, Button, Alert, View } from 'react-native';
+import { Image, StyleSheet, Platform,useColorScheme, Text, Button, Alert, View } from 'react-native';
 import React from 'react';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Block } from '@/components/Block';
+import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
+
   return (
     <>
       <ParallaxScrollView
@@ -23,8 +27,8 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <Block>
-        <Text style={styles.titleTransaction}>Transaction</Text>
-        <Text style={styles.ZeroTransac}>Vous n'avez aucune transaction</Text>
+      <Text style={[styles.titleTransaction, { color: textColor }]}>Transaction</Text>
+        <Text style={[styles.ZeroTransac,{ color: textColor }]}>Vous n'avez aucune transaction</Text>
       </Block>
       <View style={styles.buttonContainer}>
         <Button
@@ -73,7 +77,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginTop: 20,
     paddingHorizontal: 16,
-    backgroundColor:'#0a7ea4',
+    backgroundColor:'#F0C755',
   },
   ZeroTransac:{
     marginLeft:'auto',
