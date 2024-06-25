@@ -24,6 +24,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="transaction"
+        options={{
+          title: 'Deals',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'add-sharp' : 'add-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="messages"
         options={{
           title: 'messages',

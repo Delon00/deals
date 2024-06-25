@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     borderRadius: 12, // Rayon de bordure pour les coins arrondis
     padding: 16, // Rembourrage intérieur du bloc
     width: '90%', // Largeur du bloc
-    height:'55%',
+    height:'65%',
     marginVertical: 20,
     overflow: 'hidden',
     marginHorizontal:'auto'
