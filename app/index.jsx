@@ -12,7 +12,7 @@ export default function HomeScreen() {
     >
       <View style={styles.overlay}>
         <View style={styles.content}>
-          <Text style={styles.title}>Bienvenue</Text>
+          <Text style={styles.title}>Concluez vos <Text style={styles.spanTitle}>Deals</Text> sans aucun risque de perte.   </Text>
         </View>
         <Link href="/login" asChild style={styles.button}>
           <Pressable><Text style={styles.buttonText}>Commencer</Text></Pressable>
@@ -40,9 +40,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 32,
+    position:'absolute',
+    top:95,
+    textAlign:'left',
+    paddingRight:20,
+    marginRight:30,
+    fontWeight:'bold',
+    fontSize: 40,
     color: 'white',
-    fontFamily: 'SpaceMono',
+    fontFamily: 'LexendBold',
   },
   button: {
     position: 'absolute',
@@ -50,7 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D3AF77',
     paddingVertical: 12,
     paddingHorizontal: 100,
-    borderRadius: 25,
+    borderRadius: 15,
   },
   buttonText: {
     fontSize: 20,
@@ -63,4 +69,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'white',
   },
+  spanTitle:{
+    fontFamily:'redRoseBold',
+    color:'#D3AF77'
+  }
 });
