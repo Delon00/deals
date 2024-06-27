@@ -4,10 +4,10 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -27,58 +27,12 @@ export default function RootLayout() {
   }
 
   return (
-    <ImageBackground
-      source={require('@/assets/images/bg-image-index.jpg')}
-      style={styles.background}
-    >
-      <View style={styles.overlay}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Bienvenue</Text>
-        </View>
-        <TouchableOpacity style={styles.button} onPress={() => console.log('Commencer pressé')}>
-          <Text style={styles.buttonText}>Commencer</Text>
-        </TouchableOpacity>
-        <Text>Se connecter</Text>
-      </View>
-    </ImageBackground>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    resizeMode:'cover',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 32,
-    color: 'white',
-    fontFamily: 'SpaceMono',
-  },
-  button: {
-    position: 'absolute',
-    bottom: 50,
-    backgroundColor: '#D3AF77',
-    paddingVertical: 12,
-    paddingHorizontal: 100,
-    borderRadius: 25,
-  },
-  buttonText: {
-    fontSize: 20,
-    fontWeight:'bold',
-    color: '#fff',
-    fontFamily: 'SpaceMono',
-  },
-});

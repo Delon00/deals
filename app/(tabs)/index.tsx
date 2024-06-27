@@ -3,16 +3,14 @@ import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import { Block } from '@/components/Block';
 import { Colors } from '@/constants/Colors';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
-  const navigation = useNavigation(); // Initialisez useNavigation pour la navigation
+  const navigation = useNavigation();
 
   return (
     <>
