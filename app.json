@@ -12,15 +12,16 @@
       "resizeMode": "contain",
       "backgroundColor": "#000"
     },
-    
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.devcci.deals"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.devcci.deals"
     },
     "web": {
       "bundler": "metro",
@@ -28,13 +29,24 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "6f5a3171-52f5-439b-9b02-d98b9bc298f3"
+      }
+    },
+    "owner": "devcci"
   }
 }

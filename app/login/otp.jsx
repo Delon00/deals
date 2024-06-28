@@ -8,8 +8,27 @@ export default function OTPScreen() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
-    const [otpValues, setOtpValues] = useState(['', '', '', '', '']); // Array to store OTP values
+    const [otpValues, setOtpValues] = useState(['', '', '', '', '']);
     const inputRefs = useRef([]);
+    const [code,setCode]= useState("")
+
+    const confirmCode = async()=>{
+      try{
+        const userCredential = await confirm.confirm(code);
+        const user = userCredential.user;
+        const userDocument = await firestore()
+          .collection('users')
+          .doc(user.uid)
+          .get();
+          if(userDocument.exist){
+              router.navigate('@/app/(tabs)');
+          }else{
+            router.navigate('@/app/login/password',{uid:user.uid}); 
+          }
+      }catch(error){
+        console.log('code invalide',error)
+      }
+    }
 
     const handleTextChange = (index, value) => {
         if (value.length <= 1 && /^\d*$/.test(value)) {
