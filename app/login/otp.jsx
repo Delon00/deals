@@ -1,29 +1,35 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { usePhoneNumber } from './phoneNumbercontext';
+import { router } from 'expo-router';
+import { supabase } from '@/utils/supabase';
 
 export default function OTPScreen() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
+    const { phoneNumber } = usePhoneNumber();
     const [otpValues, setOtpValues] = useState(['', '', '', '', '']);
     const inputRefs = useRef([]);
-    const [code,setCode]= useState("")
 
-    const confirmCode = async()=>{
-      try{
-        const {data: { session },error,} = await supabase.auth.verifyOtp({
-            otpValues,
-            token: '123456',
-            type: 'sms',
-          })
-          
-      }catch(error){
-        console.log('code invalide',error)
-      }
-    }
+    const confirmCode = async () => {
+        try {
+            const otpCode = otpValues.join('');
+            const { data: { session }, error } = await supabase.auth.verifyOtp({
+                phone: phoneNumber,
+                token: otpCode,
+                type: 'sms',
+            });
+            if (session) {
+                router.push('/login/password');
+            } else {
+                console.error('OTP verification failed:', error);
+            }
+        } catch (error) {
+            console.error('Code invalide', error);
+        }
+    };
 
     const handleTextChange = (index, value) => {
         if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -44,10 +50,9 @@ export default function OTPScreen() {
         }
     };
 
-    const handlePressTerms = () => {
-        Linking.openURL('https://www.example.com/terms');
+    const handleResendCode = () => {
+        // Implémentez la logique pour renvoyer le code OTP
     };
-    
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -71,10 +76,16 @@ export default function OTPScreen() {
                         ))}
                     </View>
                     <View style={styles.condition}>
-                        <Text style={[styles.text, { color: textColor}]}>Je n'ai pas reçu de code!  
-                            <Text style={styles.link} onPress={handlePressTerms}> Renvoyer </Text>
+                        <Text style={[styles.text, { color: textColor }]}>
+                            Je n'ai pas reçu de code!  
+                            <Text style={styles.link} onPress={handleResendCode}> Renvoyer </Text>
                         </Text>
                     </View>
+                </View>
+                <View style={styles.BtnView}>
+                    <Pressable style={styles.button} onPress={confirmCode}>
+                        <Text style={styles.buttonText}>Vérifier</Text>
+                    </Pressable>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -108,7 +119,7 @@ const styles = StyleSheet.create({
         height: 50,
         borderWidth: 1,
         borderRadius: 8,
-        borderColor:'gray',
+        borderColor: 'gray',
         fontSize: 24,
         textAlign: 'center',
     },
@@ -119,7 +130,7 @@ const styles = StyleSheet.create({
         width: '100%',
         position: 'absolute',
         bottom: 60,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     button: {
         backgroundColor: '#D3AF77',
@@ -144,6 +155,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
 });

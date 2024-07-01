@@ -1,26 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking, AppState  } from 'react-native';
+import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
-import { Checkbox } from '@/components/checkbox';
-import { supabase } from '@/utils/supabase'
-
-
-AppState.addEventListener('change', (state) => {
-    if (state === 'active') {
-      supabase.auth.startAutoRefresh()
-    } else {
-      supabase.auth.stopAutoRefresh()
-    }
-  })
+import { usePhoneNumber } from './phoneNumbercontext';
+import { router } from 'expo-router';
 
 export default function Login() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [confirm, setConfirm] = useState(null);
+    const { phoneNumber, setPhoneNumber } = usePhoneNumber();
     const [checked, setChecked] = useState(false);
 
     const handleTextChange = (input) => {
@@ -32,20 +20,16 @@ export default function Login() {
 
     const signInWithPhoneNumber = async () => {
         try {
-            const confirmation = await supabase.auth.signInWithOtp(phoneNumber);
-            setConfirm(confirmation);
+            const confirmation = await supabase.auth.signInWithOtp({ phone: phoneNumber });
+            // Store confirmation if needed
+            router.push('/login/otp');
         } catch (error) {
             console.log("error", error);
         }
     };
 
-    const handlePressTerms = () => {
-        Linking.openURL('https://www.example.com/terms');
-    };
-
-    const handlePressPrivacy = () => {
-        Linking.openURL('https://www.example.com/privacy');
-    };
+    const handlePressTerms = () => { Linking.openURL('https://www.example.com/terms'); };
+    const handlePressPrivacy = () => { Linking.openURL('https://www.example.com/privacy'); };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -88,8 +72,9 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-    main: { flex: 1 },
-
+    main: {
+        flex: 1,
+    },
     middle: {
         marginTop: 50,
         paddingHorizontal: 20,
@@ -103,31 +88,23 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     inputContainer: {
-        marginTop: 50,
-        marginVertical: 10,
-        marginHorizontal: 5,
-    },
-    label: {
-        fontSize: 16,
-        marginBottom: 5,
-        color: '#6e6e6e',
-        fontWeight: 'bold',
+        marginTop: 20,
     },
     textInput: {
-        width: '100%',
-        padding: 16,
+        height: 50,
         borderWidth: 1,
         borderRadius: 8,
+        paddingHorizontal: 10,
         fontSize: 18,
     },
     text: {
-        maxWidth: '92%',
+        fontSize: 15,
     },
     BtnView: {
         width: '100%',
         position: 'absolute',
         bottom: 60,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     button: {
         backgroundColor: '#D3AF77',
@@ -144,13 +121,16 @@ const styles = StyleSheet.create({
     },
     link: {
         color: '#D3AF77',
-        textDecorationLine: 'underline',
     },
     condition: {
         marginVertical: 25,
-        marginHorizontal: 5,
         display: 'flex',
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
+    },
+    label: {
+        fontSize: 16,
+        color: '#D3AF77',
+        marginBottom: 5,
     },
 });

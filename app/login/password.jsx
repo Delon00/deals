@@ -1,46 +1,68 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import { Link,router } from 'expo-router';
-import { Firestore } from 'firebase/firestore';
+import { usePhoneNumber } from './phoneNumbercontext';
+import { router } from 'expo-router';
+import { supabase } from '@/utils/supabase';
 
-export default function OTPScreen() {
+export default function PasswordScreen() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
-    const [otpValues, setOtpValues] = useState(['', '', '', '', '']); // Array to store OTP values
-    const inputRefs = useRef([]);
-    const handlePressTerms = () => {
-        Linking.openURL('https://www.example.com/terms');
+    const { phoneNumber } = usePhoneNumber();
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const handlePasswordChange = async () => {
+        if (password !== confirmPassword) {
+            console.error("Les mots de passe ne correspondent pas");
+            return;
+        }
+        try {
+            const { user, error } = await supabase.auth.update({
+                password: password,
+            });
+            if (user) {
+                router.push('/home');  // Redirige vers la page d'accueil ou toute autre page après la mise à jour du mot de passe
+            } else {
+                console.error('Password update failed:', error);
+            }
+        } catch (error) {
+            console.error('Erreur de mise à jour du mot de passe', error);
+        }
     };
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={[styles.main, { backgroundColor }]}>
                 <View style={styles.middle}>
-                    <Text style={styles.middleTitle}>Entrez le code OTP de vérification</Text>
-                    <Text style={[styles.middleText, { color: textColor }]}>Un code de vérification vous a été envoyé. Veuillez le saisir pour continuer.</Text>
-                    <View style={styles.otpContainer}>
-                        {otpValues.map((value, index) => (
-                            <TextInput
-                                key={index}
-                                ref={(ref) => (inputRefs.current[index] = ref)}
-                                style={[styles.otpInput, { color: textColor }]}
-                                onChangeText={(text) => handleTextChange(index, text)}
-                                value={value}
-                                keyboardType="numeric"
-                                maxLength={1}
-                                placeholder="0"
-                                placeholderTextColor={colorScheme === 'dark' ? '#888' : '#ccc'}
-                            />
-                        ))}
+                    <Text style={styles.middleTitle}>Définissez votre mot de passe</Text>
+                    <Text style={[styles.middleText, { color: textColor }]}>Veuillez entrer un nouveau mot de passe pour sécuriser votre compte.</Text>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Nouveau mot de passe</Text>
+                        <TextInput
+                            style={[styles.textInput, { color: textColor, borderColor: textColor }]}
+                            onChangeText={setPassword}
+                            value={password}
+                            placeholder={'Nouveau mot de passe'}
+                            placeholderTextColor={colorScheme === 'dark' ? '#888' : '#ccc'}
+                            secureTextEntry
+                        />
+                        <Text style={styles.label}>Confirmer le mot de passe</Text>
+                        <TextInput
+                            style={[styles.textInput, { color: textColor, borderColor: textColor }]}
+                            onChangeText={setConfirmPassword}
+                            value={confirmPassword}
+                            placeholder={'Confirmer le mot de passe'}
+                            placeholderTextColor={colorScheme === 'dark' ? '#888' : '#ccc'}
+                            secureTextEntry
+                        />
                     </View>
-                    <View style={styles.condition}>
-                        <Text style={[styles.text, { color: textColor}]}>Je n'ai pas reçu de code!  
-                            <Text style={styles.link} onPress={handlePressTerms}> Renvoyer </Text>
-                        </Text>
-                    </View>
+                </View>
+                <View style={styles.BtnView}>
+                    <Pressable style={styles.button} onPress={handlePasswordChange}>
+                        <Text style={styles.buttonText}>Mettre à jour</Text>
+                    </Pressable>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -63,20 +85,15 @@ const styles = StyleSheet.create({
     middleText: {
         marginVertical: 10,
     },
-    otpContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+    inputContainer: {
         marginTop: 20,
-        marginHorizontal: 30,
     },
-    otpInput: {
-        width: 50,
+    textInput: {
         height: 50,
         borderWidth: 1,
         borderRadius: 8,
-        borderColor:'gray',
-        fontSize: 24,
-        textAlign: 'center',
+        paddingHorizontal: 10,
+        fontSize: 18,
     },
     text: {
         fontSize: 15,
@@ -85,7 +102,7 @@ const styles = StyleSheet.create({
         width: '100%',
         position: 'absolute',
         bottom: 60,
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     button: {
         backgroundColor: '#D3AF77',
@@ -100,16 +117,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
     },
-    link: {
+    label: {
+        fontSize: 16,
         color: '#D3AF77',
-        textDecorationLine: 'none',
-    },
-    condition: {
-        marginVertical: 25,
-        marginHorizontal: 5,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center'
+        marginBottom: 5,
     },
 });
