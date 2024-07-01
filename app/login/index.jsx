@@ -4,7 +4,6 @@ import { Colors } from '@/constants/Colors';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { Checkbox } from '@/components/checkbox';
-import auth from '@react-native-firebase/auth';
 // import firestore from '@react-native-firebase/firestore';
 
 export default function Login() {
