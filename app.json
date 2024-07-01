@@ -14,10 +14,13 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.devcci.deals"
+      "bundleIdentifier": "com.devcci.deals",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
+        "googleServicesFile": "./google-services.json",
+        "package": "com.devcci.deals",
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
@@ -31,7 +34,8 @@
     "plugins": [
       "expo-router",
       "@react-native-firebase/app",
-      "@react-native-firebase/auth"
+      "@react-native-firebase/auth",
+      "expo-dev-launcher"
     ],
     "experiments": {
       "typedRoutes": true
