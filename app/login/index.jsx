@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
+import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking, AppState  } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { Checkbox } from '@/components/checkbox';
-// import firestore from '@react-native-firebase/firestore';
+import { supabase } from '@/utils/supabase'
+
+
+AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      supabase.auth.startAutoRefresh()
+    } else {
+      supabase.auth.stopAutoRefresh()
+    }
+  })
 
 export default function Login() {
     const colorScheme = useColorScheme();
@@ -23,7 +32,7 @@ export default function Login() {
 
     const signInWithPhoneNumber = async () => {
         try {
-            const confirmation = await auth().signInWithPhoneNumber(phoneNumber);
+            const confirmation = await supabase.auth.signInWithOtp(phoneNumber);
             setConfirm(confirmation);
         } catch (error) {
             console.log("error", error);

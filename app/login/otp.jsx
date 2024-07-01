@@ -14,17 +14,12 @@ export default function OTPScreen() {
 
     const confirmCode = async()=>{
       try{
-        const userCredential = await confirm.confirm(code);
-        const user = userCredential.user;
-        const userDocument = await firestore()
-          .collection('users')
-          .doc(user.uid)
-          .get();
-          if(userDocument.exist){
-              router.navigate('@/app/(tabs)');
-          }else{
-            router.navigate('@/app/login/password',{uid:user.uid}); 
-          }
+        const {data: { session },error,} = await supabase.auth.verifyOtp({
+            otpValues,
+            token: '123456',
+            type: 'sms',
+          })
+          
       }catch(error){
         console.log('code invalide',error)
       }
@@ -52,6 +47,7 @@ export default function OTPScreen() {
     const handlePressTerms = () => {
         Linking.openURL('https://www.example.com/terms');
     };
+    
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
