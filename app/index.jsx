@@ -7,7 +7,6 @@ const IndexScreen = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        // Vérifier si une session est active en vérifiant par exemple AsyncStorage
         const userToken = await AsyncStorage.getItem('userToken');
 
         if (userToken) {

@@ -3,7 +3,8 @@ import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, 
 import { Colors } from '@/constants/Colors';
 import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '@/utils/supabase';
-import * as Crypto from 'expo-crypto'; 
+import * as Crypto from 'expo-crypto';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export default function PasswordScreen() {
     const colorScheme = useColorScheme();
@@ -60,8 +61,15 @@ export default function PasswordScreen() {
             const updatedPasswordValues = [...passwordValues];
             updatedPasswordValues[index] = value;
             setPasswordValues(updatedPasswordValues);
-            if (value !== '') {if (index < passwordValues.length - 1) {inputRefs.current[index + 1]?.focus();}}
-            else {if (index > 0) {inputRefs.current[index - 1]?.focus();}}
+            if (value !== '') {
+                if (index < passwordValues.length - 1) {
+                    inputRefs.current[index + 1]?.focus();
+                }
+            } else {
+                if (index > 0) {
+                    inputRefs.current[index - 1]?.focus();
+                }
+            }
         }
     };
 
@@ -110,6 +118,7 @@ export default function PasswordScreen() {
             if (userData) {
                 if (userData.password === hashedPassword) {
                     console.log('Connexion réussie');
+                    await AsyncStorage.setItem('usertoken', userData.user_id);
                     router.push('../(tabs)');
                 } else {
                     setPasswordValuesError('Mot de passe incorrect');
@@ -122,12 +131,15 @@ export default function PasswordScreen() {
                     .from('users')
                     .insert([
                         { userphone: phoneNumber, nom: nom, prenom: prenom, password: hashedPassword, created_at: new Date() },
-                    ]);
+                    ])
+                    .select()
+                    .single();
 
                 if (error) {
                     console.error('Erreur lors de l\'insertion :', error.message);
                 } else {
                     console.log('Nouvelle ligne insérée avec succès !');
+                    await AsyncStorage.setItem('usertoken', data.user_id);
                     router.push('../(tabs)');
                 }
             }
@@ -246,7 +258,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         marginHorizontal: 50,
         paddingHorizontal: 80,
-        borderRadius:15,
+        borderRadius: 15,
     },
     buttonText: {
         color: 'white',
@@ -263,6 +275,6 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
         marginTop: 30,
-        textAlign:'center',
+        textAlign: 'center',
     },
 });
