@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { usePhoneNumber } from './phoneNumbercontext';
 import { router } from 'expo-router';
+import { supabase } from '@/utils/supabase';
 
 export default function Login() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
-    const { phoneNumber, setPhoneNumber } = usePhoneNumber();
-    const [checked, setChecked] = useState(false);
+
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [phoneNumberError, setPhoneNumberError] = useState('');
 
     const handleTextChange = (input) => {
         const validPhoneNumber = /^[0-9]{0,10}$/;
@@ -19,12 +20,25 @@ export default function Login() {
     };
 
     const signInWithPhoneNumber = async () => {
-        try {
-            const confirmation = await supabase.auth.signInWithOtp({ phone: phoneNumber });
-            // Store confirmation if needed
-            router.push('/login/otp');
-        } catch (error) {
-            console.log("error", error);
+        if (phoneNumber.length === 0) {
+            setPhoneNumberError('Veuillez entrer un numéro de téléphone');
+        } else if (phoneNumber.length !== 10) {
+            setPhoneNumberError('Ce numéro de téléphone n\'est pas pris en charge');
+        } else {
+            try {
+                // const formattedPhoneNumber = `+225${phoneNumber}`;
+                // const { data, error } = await supabase.auth.signInWithOtp({ phone: formattedPhoneNumber });
+                // if (error) {
+                //     console.error(error);
+                //     setPhoneNumberError(`Erreur lors de l\'envoi du code OTP ${error}`);
+                // } else {
+                //     router.push({pathname:"/login/otp",params:{phoneNumber}});
+                // }
+                router.push({pathname:"/login/otp",params:{phoneNumber}});
+            } catch (error) {
+                console.log("error", error);
+                setPhoneNumberError('Une erreur est survenue');
+            }
         }
     };
 
@@ -48,23 +62,19 @@ export default function Login() {
                             keyboardType="phone-pad"
                             maxLength={10}
                         />
-                    </View>
-                    <View style={styles.condition}>
-                        <Checkbox checked={checked} onPress={() => setChecked(!checked)} />
-                        <Text style={[styles.text, { color: textColor }]}>
-                            J'accepte les
-                            <Text style={styles.link} onPress={handlePressTerms}> termes et conditions d'utilisation </Text>
-                            et la
-                            <Text style={styles.link} onPress={handlePressPrivacy}> politique de confidentialité</Text>.
-                        </Text>
+                        {phoneNumberError ? <Text style={styles.errorText}>{phoneNumberError}</Text> : null}
                     </View>
                 </View>
                 <View style={styles.BtnView}>
-                    <Link href="/login/otp" asChild style={styles.button} onPress={checked ? signInWithPhoneNumber : null}>
-                        <Pressable>
-                            <Text style={styles.buttonText}>Suivant</Text>
-                        </Pressable>
-                    </Link>
+                    <Pressable style={styles.button} onPress={signInWithPhoneNumber}>
+                        <Text style={styles.buttonText}>Suivant</Text>
+                    </Pressable>
+                    <Text style={[styles.text, { color: textColor }]}>
+                        En cliquant sur suivant vous acceptez les
+                        <Text style={styles.link} onPress={handlePressTerms}> termes et conditions d'utilisation </Text>
+                        et la
+                        <Text style={styles.link} onPress={handlePressPrivacy}> politique de confidentialité</Text>.
+                    </Text>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -99,6 +109,9 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 15,
+        textAlign: 'center',
+        marginTop: 30,
+        paddingHorizontal: 30,
     },
     BtnView: {
         width: '100%',
@@ -132,5 +145,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#D3AF77',
         marginBottom: 5,
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 5,
     },
 });

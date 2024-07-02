@@ -12,6 +12,7 @@ web-build/
 css.css
 .env.local
 android/
+windows/
 
 # macOS
 .DS_Store

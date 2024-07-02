@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { usePhoneNumber } from './phoneNumbercontext';
 import { router } from 'expo-router';
 import { supabase } from '@/utils/supabase';
 

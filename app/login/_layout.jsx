@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
-import { PhoneNumberProvider } from './path/to/PhoneNumberContext';
 
 export default function LoginLayout() {
     const colorScheme = useColorScheme();
@@ -24,14 +23,12 @@ export default function LoginLayout() {
 
     return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <PhoneNumberProvider>
             <View style={[styles.container, { backgroundColor }]}>
                 <View style={styles.progressBarContainer}>
                     <View style={[styles.progressBar, { width: `${(progress / 3) * 100}%` }]} />
                 </View>
                 <Slot />
-            </View>
-        </PhoneNumberProvider>    
+            </View>   
     </ThemeProvider>
     );
 }

@@ -1,15 +1,18 @@
 import React, { useState, useRef } from 'react';
 import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { usePhoneNumber } from './phoneNumbercontext';
-import { router } from 'expo-router';
+import { router,useLocalSearchParams } from 'expo-router'; // Assurez-vous d'importer router depuis 'expo-router'
 import { supabase } from '@/utils/supabase';
 
 export default function OTPScreen() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
-    const { phoneNumber } = usePhoneNumber();
+    const params = useLocalSearchParams();
+
+    // Récupérer le phoneNumber depuis les params
+    const { phoneNumber } = params;
+
     const [otpValues, setOtpValues] = useState(['', '', '', '', '']);
     const inputRefs = useRef([]);
 
@@ -24,10 +27,10 @@ export default function OTPScreen() {
             if (session) {
                 router.push('/login/password');
             } else {
-                console.error('OTP verification failed:', error);
+                console.error('La vérification du OTP a échoué :', error);
             }
         } catch (error) {
-            console.error('Code invalide', error);
+            console.error('Erreur lors de la validation du code OTP :', error);
         }
     };
 
@@ -37,7 +40,7 @@ export default function OTPScreen() {
             updatedOtpValues[index] = value;
             setOtpValues(updatedOtpValues);
 
-            // Move focus to the next input field or previous if deleting
+            // Déplacer le focus vers le champ suivant ou précédent en fonction de l'action
             if (value !== '') {
                 if (index < otpValues.length - 1) {
                     inputRefs.current[index + 1]?.focus();
@@ -50,8 +53,17 @@ export default function OTPScreen() {
         }
     };
 
-    const handleResendCode = () => {
-        // Implémentez la logique pour renvoyer le code OTP
+    const handleResendCode = async () => {
+        try {
+            const { error } = await supabase.auth.sendOtp({ phone: phoneNumber });
+            if (error) {
+                console.error('Erreur lors de l\'envoi du code OTP :', error);
+            } else {
+                console.log('Code OTP renvoyé avec succès.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi du code OTP :', error);
+        }
     };
 
     return (
@@ -59,7 +71,7 @@ export default function OTPScreen() {
             <View style={[styles.main, { backgroundColor }]}>
                 <View style={styles.middle}>
                     <Text style={styles.middleTitle}>Entrez le code OTP de vérification</Text>
-                    <Text style={[styles.middleText, { color: textColor }]}>Un code de vérification vous a été envoyé. Veuillez le saisir pour continuer.</Text>
+                    <Text style={[styles.middleText, { color: textColor }]}>Un code de vérification vous a été envoyé sur le numéro {phoneNumber}. Veuillez le saisir pour continuer.</Text>
                     <View style={styles.otpContainer}>
                         {otpValues.map((value, index) => (
                             <TextInput
@@ -112,7 +124,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 20,
-        marginHorizontal: 30,
     },
     otpInput: {
         width: 50,
