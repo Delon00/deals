@@ -9,8 +9,6 @@ export default function OTPScreen() {
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
     const params = useLocalSearchParams();
-
-    // Récupérer le phoneNumber depuis les params
     const { phoneNumber } = params;
 
     const [otpValues, setOtpValues] = useState(['', '', '', '', '']);
@@ -18,17 +16,18 @@ export default function OTPScreen() {
 
     const confirmCode = async () => {
         try {
-            const otpCode = otpValues.join('');
-            const { data: { session }, error } = await supabase.auth.verifyOtp({
-                phone: phoneNumber,
-                token: otpCode,
-                type: 'sms',
-            });
-            if (session) {
-                router.push('/login/password');
-            } else {
-                console.error('La vérification du OTP a échoué :', error);
-            }
+            // const otpCode = otpValues.join('');
+            // const { data: { session }, error } = await supabase.auth.verifyOtp({
+            //     phone: phoneNumber,
+            //     token: otpCode,
+            //     type: 'sms',
+            // });
+            // if (session) {
+            //     router.push('/login/password');
+            // } else {
+            //     console.error('La vérification du OTP a échoué :', error);
+            // }
+            router.push({pathname:"/login/password",params:{phoneNumber}});
         } catch (error) {
             console.error('Erreur lors de la validation du code OTP :', error);
         }

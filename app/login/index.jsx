@@ -53,8 +53,7 @@ export default function Login() {
                     <Text style={[styles.middleText, { color: textColor }]}>Veuillez entrer votre numéro de téléphone pour accéder à nos services.</Text>
                     <View style={styles.inputContainer}>
                         <Text style={styles.label}>Numéro de téléphone</Text>
-                        <TextInput
-                            style={[styles.textInput, { color: textColor, borderColor: textColor }]}
+                        <TextInput style={[styles.textInput, { color: textColor, borderColor: textColor }]}
                             onChangeText={handleTextChange}
                             value={phoneNumber}
                             placeholder={'0123401676'}
