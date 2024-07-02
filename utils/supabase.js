@@ -14,3 +14,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         localStorage:AsyncStorage
     },
 });
+// AppState.addEventListener('change', (state) => {
+//     if (state === 'active') {
+//       supabase.auth.startAutoRefresh()
+//     } else {
+//       supabase.auth.stopAutoRefresh()
+//     }
+//   })

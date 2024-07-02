@@ -1,23 +1,22 @@
 import { Image, StyleSheet, Platform, useColorScheme, Text, Button, Alert, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { HelloWave } from '@/components/HelloWave';
 import { ThemedText } from '@/components/ThemedText';
 import { Block } from '@/components/Block';
 import { Colors } from '@/constants/Colors';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
-  const navigation = useNavigation();
 
   return (
     <>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <ThemedText type="title">Bienvenue! <HelloWave /></ThemedText>
-          <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+          <TouchableOpacity onPress={() => router.push('settings')}>
             <FontAwesome name="gear" size={25} color="white" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>

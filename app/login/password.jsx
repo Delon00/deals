@@ -3,7 +3,7 @@ import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, 
 import { Colors } from '@/constants/Colors';
 import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '@/utils/supabase';
-import bcrypt from 'bcryptjs';
+import * as Crypto from 'expo-crypto'; 
 
 export default function PasswordScreen() {
     const colorScheme = useColorScheme();
@@ -67,65 +67,63 @@ export default function PasswordScreen() {
 
     const handlePassword = async () => {
         const newPassword = passwordValues.join('');
-    
-        // Validation des champs nom, prénom, et mot de passe
+
         if (nom.length === 0) {
             setNomError('Veuillez entrer votre nom');
-            return;
         } else {
             setNomError('');
         }
-    
+
         if (prenom.length === 0) {
             setPrenomError('Veuillez entrer votre prénom');
-            return;
         } else {
             setPrenomError('');
         }
-    
+
         if (newPassword.length < 4) {
             setPasswordValuesError('Veuillez entrer un mot de passe à 4 chiffres');
-            return;
         } else {
             setPasswordValuesError('');
         }
-    
-        // Hachage du mot de passe avec bcryptjs
+
+        if (nom.length === 0 || prenom.length === 0 || newPassword.length < 4) {
+            return;
+        }
+
         try {
-            const hashedPassword = await bcrypt.hash(newPassword, 10); // 10 is the salt rounds
-    
-            // Vérifier si l'utilisateur existe déjà
+            const hashedPassword = await Crypto.digestStringAsync(
+                Crypto.CryptoDigestAlgorithm.SHA256,
+                newPassword
+            );
+
             const { data: userData, error: userError } = await supabase
                 .from('users')
                 .select('user_id, password')
                 .eq('userphone', phoneNumber)
                 .single();
-    
+
             if (userError && userError.code !== 'PGRST116') {
                 console.error('Erreur lors de la vérification de l\'utilisateur:', userError.message);
                 return;
             }
-    
+
             if (userData) {
-                // Vérifier le mot de passe haché
-                const passwordMatch = await bcrypt.compare(newPassword, userData.password);
-    
-                if (passwordMatch) {
+                if (userData.password === hashedPassword) {
                     console.log('Connexion réussie');
                     router.push('../(tabs)');
                 } else {
                     setPasswordValuesError('Mot de passe incorrect');
-                    setPasswordValues(['', '', '', '']); // Réinitialiser les champs de mot de passe
+                    // Réinitialiser les champs de mot de passe
+                    setPasswordValues(['', '', '', '']);
                     inputRefs.current[0]?.focus(); // Mettre le focus sur le premier champ de mot de passe
                 }
             } else {
-                // Insérer un nouvel utilisateur avec le mot de passe haché
                 const { data, error } = await supabase
                     .from('users')
                     .insert([
-                        { userphone: phoneNumber, nom: nom, prenom: prenom, password: hashedPassword, updated_at: new Date() },
+                        { userphone: phoneNumber, nom: nom, prenom: prenom, password: hashedPassword, created_at: new Date() },
                     ]);
-    
+
                 if (error) {
                     console.error('Erreur lors de l\'insertion :', error.message);
                 } else {

@@ -18,21 +18,21 @@ export default function OTPScreen() {
 
     const confirmCode = async () => {
         try {
-            const otpCode = otpValues.join('');
-            const { data: { session }, error } = await supabase.auth.verifyOtp({
-                phone: formattedPhoneNumber,
-                token: otpCode,
-                type: 'sms',
-            });
-            if (session) {
-                router.push({pathname:"/login/password",params:{phoneNumber}});
-            } else {
-                setOtpValuesError('le code OTP est incorrect')
-                setOtpValues(['', '', '', '', '','']);
-                inputRefs.current[0]?.focus();
-                console.error('La vérification du OTP a échoué :', error);
-            }
-            // router.push({pathname:"/login/password",params:{phoneNumber}});
+            // const otpCode = otpValues.join('');
+            // const { data: { session }, error } = await supabase.auth.verifyOtp({
+            //     phone: formattedPhoneNumber,
+            //     token: otpCode,
+            //     type: 'sms',
+            // });
+            // if (session) {
+            //     router.push({pathname:"/login/password",params:{phoneNumber}});
+            // } else {
+            //     setOtpValuesError('le code OTP est incorrect')
+            //     setOtpValues(['', '', '', '', '','']);
+            //     inputRefs.current[0]?.focus();
+            //     console.error('La vérification du OTP a échoué :', error);
+            // }
+            router.push({pathname:"/login/password",params:{phoneNumber}});
         } catch (error) {
             console.error('Erreur lors de la validation du code OTP :', error);
         }
