@@ -8,13 +8,17 @@ export default function PasswordScreen() {
     const colorScheme = useColorScheme();
     const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
-    
+
     const params = useLocalSearchParams();
     const { phoneNumber } = params;
 
     const [passwordValues, setPasswordValues] = useState(['', '', '', '']);
     const [nom, setNom] = useState('');
     const [prenom, setPrenom] = useState('');
+    const [nomError, setNomError] = useState('');
+    const [prenomError, setPrenomError] = useState('');
+    const [passwordValuesError, setPasswordValuesError] = useState('');
+    const [userExists, setUserExists] = useState(false);
     const inputRefs = useRef([]);
 
     useEffect(() => {
@@ -25,16 +29,18 @@ export default function PasswordScreen() {
                     .select('nom, prenom')
                     .eq('userphone', phoneNumber)
                     .single();
-                
-                if (error) {
+
+                if (error && error.code !== 'PGRST116') {
                     console.error('Erreur lors de la vérification de l\'utilisateur:', error.message);
                     return;
                 }
 
                 if (!data) {
+                    setUserExists(false);
                     setNom('');
                     setPrenom('');
                 } else {
+                    setUserExists(true);
                     setNom(data.nom || '');
                     setPrenom(data.prenom || '');
                 }
@@ -53,34 +59,71 @@ export default function PasswordScreen() {
             const updatedPasswordValues = [...passwordValues];
             updatedPasswordValues[index] = value;
             setPasswordValues(updatedPasswordValues);
-
-            // Déplacer le focus vers le champ suivant ou précédent en fonction de l'action
-            if (value !== '') {
-                if (index < passwordValues.length - 1) {
-                    inputRefs.current[index + 1]?.focus();
-                }
-            } else {
-                if (index > 0) {
-                    inputRefs.current[index - 1]?.focus();
-                }
-            }
+            if (value !== '') {if (index < passwordValues.length - 1) {inputRefs.current[index + 1]?.focus();}}
+            else {if (index > 0) {inputRefs.current[index - 1]?.focus();}}
         }
     };
 
-    const handlePasswordChange = async () => {
+    const handlePassword = async () => {
         const newPassword = passwordValues.join('');
-        
+
+        if (nom.length === 0) {
+            setNomError('Veuillez entrer votre nom');
+        } else {
+            setNomError('');
+        }
+
+        if (prenom.length === 0) {
+            setPrenomError('Veuillez entrer votre prénom');
+        } else {
+            setPrenomError('');
+        }
+
+        if (newPassword.length < 4) {
+            setPasswordValuesError('Veuillez entrer un mot de passe à 4 chiffres');
+        } else {
+            setPasswordValuesError('');
+        }
+
+        if (nom.length === 0 || prenom.length === 0 || newPassword.length < 4) {
+            return;
+        }
+
         try {
-            const { user, error } = await supabase.auth.update({
-                password: newPassword,
-            });
-            if (user) {
-                router.push('/home');  // Redirige vers la page d'accueil ou toute autre page après la mise à jour du mot de passe
+            const { data: userData, error: userError } = await supabase
+                .from('users')
+                .select('user_id, password')
+                .eq('userphone', phoneNumber)
+                .single();
+
+            if (userError && userError.code !== 'PGRST116') {
+                console.error('Erreur lors de la vérification de l\'utilisateur:', userError.message);
+                return;
+            }
+
+            if (userData) {
+                if (userData.password === newPassword) {
+                    console.log('Connexion réussie');
+                    router.push('../(tabs)');
+                } else {
+                    setPasswordValuesError('Mot de passe incorrect');
+                }
             } else {
-                console.error('Échec de la mise à jour du mot de passe :', error);
+                const { data, error } = await supabase
+                    .from('users')
+                    .insert([
+                        { userphone: phoneNumber, nom: nom, prenom: prenom, password: newPassword, updated_at: new Date() },
+                    ]);
+
+                if (error) {
+                    console.error('Erreur lors de l\'insertion :', error.message);
+                } else {
+                    console.log('Nouvelle ligne insérée avec succès !');
+                    router.push('../(tabs)');
+                }
             }
         } catch (error) {
-            console.error('Erreur de mise à jour du mot de passe', error);
+            console.error('Erreur lors de la gestion du mot de passe', error);
         }
     };
 
@@ -88,29 +131,29 @@ export default function PasswordScreen() {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={[styles.main, { backgroundColor }]}>
                 <View style={styles.middle}>
-                    <Text style={styles.middleTitle}>{nom === '' && prenom === '' ? 'Inscription d\'un nouvel utilisateur' : 'Définissez votre mot de passe'}</Text>
-                    <Text style={[styles.middleText, { color: textColor }]}>{nom === '' && prenom === '' ? 'Veuillez compléter les informations ci-dessous pour créer votre compte.' : 'Veuillez entrez votre mot de passe afin de vous connecter'}</Text>
-                    {nom === '' && prenom === '' && (
+                    <Text style={styles.middleTitle}>{!userExists ? 'Inscription d\'un nouvel utilisateur' : 'Entrez votre mot de passe'}</Text>
+                    <Text style={[styles.middleText, { color: textColor }]}>{!userExists ? 'Veuillez compléter les informations ci-dessous pour créer votre compte.' : 'Veuillez entrez votre mot de passe afin de vous connecter'}</Text>
+                    {!userExists && (
                         <View style={styles.inputContainer}>
                             <Text style={styles.label}>Nom:</Text>
-                            <TextInput
-                                style={[styles.textInput, { color: textColor, borderColor: textColor }]}
+                            <TextInput style={[styles.textInput, { color: textColor, borderColor: textColor }]}
                                 onChangeText={setNom}
                                 value={nom}
                                 placeholder="Nom"
                                 placeholderTextColor={colorScheme === 'dark' ? '#888' : '#ccc'}
                             />
+                            {nomError ? <Text style={styles.errorText}>{nomError}</Text> : null}
                             <Text style={styles.label}>Prénom:</Text>
-                            <TextInput
-                                style={[styles.textInput, {  color: textColor, borderColor: textColor }]}
+                            <TextInput style={[styles.textInput, { color: textColor, borderColor: textColor }]}
                                 onChangeText={setPrenom}
                                 value={prenom}
                                 placeholder="Prénom"
                                 placeholderTextColor={colorScheme === 'dark' ? '#888' : '#ccc'}
                             />
+                            {prenomError ? <Text style={styles.errorText}>{prenomError}</Text> : null}
                         </View>
                     )}
-                    <Text style={styles.label}>Créez votre mot de passe à 4 chiffres</Text>
+                    <Text style={styles.label}>{!userExists ? 'Créez votre mot de passe à 4 chiffres' : 'Entrez votre mot de passe à 4 chiffres'}</Text>
                     <View style={styles.passwordContainer}>
                         {passwordValues.map((value, index) => (
                             <TextInput
@@ -127,9 +170,10 @@ export default function PasswordScreen() {
                             />
                         ))}
                     </View>
+                    {passwordValuesError ? <Text style={styles.errorText}>{passwordValuesError}</Text> : null}
                 </View>
                 <View style={styles.BtnView}>
-                    <Pressable style={styles.button} onPress={handlePasswordChange}>
+                    <Pressable style={styles.button} onPress={handlePassword}>
                         <Text style={styles.buttonText}>Terminé</Text>
                     </Pressable>
                 </View>
@@ -203,5 +247,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#D3AF77',
         marginBottom: 5,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginBottom: 10,
     },
 });
