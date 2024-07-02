@@ -26,15 +26,15 @@ export default function Login() {
             setPhoneNumberError('Ce numéro de téléphone n\'est pas pris en charge');
         } else {
             try {
-                // const formattedPhoneNumber = `+225${phoneNumber}`;
-                // const { data, error } = await supabase.auth.signInWithOtp({ phone: formattedPhoneNumber });
-                // if (error) {
-                //     console.error(error);
-                //     setPhoneNumberError(`Erreur lors de l\'envoi du code OTP ${error}`);
-                // } else {
-                //     router.push({pathname:"/login/otp",params:{phoneNumber}});
-                // }
-                router.push({pathname:"/login/otp",params:{phoneNumber}});
+                const formattedPhoneNumber = `+225${phoneNumber}`;
+                const { data, error } = await supabase.auth.signInWithOtp({ phone: formattedPhoneNumber });
+                if (error) {
+                    console.error(error);
+                    setPhoneNumberError(`Erreur lors de l\'envoi du code OTP ${error}`);
+                } else {
+                    router.push({pathname:"/login/otp",params:{phoneNumber}});
+                }
+                // router.push({pathname:"/login/otp",params:{phoneNumber}});
             } catch (error) {
                 console.log("error", error);
                 setPhoneNumberError('Une erreur est survenue');

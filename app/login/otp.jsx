@@ -10,24 +10,29 @@ export default function OTPScreen() {
     const backgroundColor = colorScheme === 'dark' ? Colors.dark.background : Colors.light.background;
     const params = useLocalSearchParams();
     const { phoneNumber } = params;
+    const formattedPhoneNumber = `+225${phoneNumber}`;
 
-    const [otpValues, setOtpValues] = useState(['', '', '', '', '']);
+    const [otpValues, setOtpValues] = useState(['', '', '', '', '','']);
+    const [otpValuesError, setOtpValuesError] = useState('');
     const inputRefs = useRef([]);
 
     const confirmCode = async () => {
         try {
-            // const otpCode = otpValues.join('');
-            // const { data: { session }, error } = await supabase.auth.verifyOtp({
-            //     phone: phoneNumber,
-            //     token: otpCode,
-            //     type: 'sms',
-            // });
-            // if (session) {
-            //     router.push('/login/password');
-            // } else {
-            //     console.error('La vérification du OTP a échoué :', error);
-            // }
-            router.push({pathname:"/login/password",params:{phoneNumber}});
+            const otpCode = otpValues.join('');
+            const { data: { session }, error } = await supabase.auth.verifyOtp({
+                phone: formattedPhoneNumber,
+                token: otpCode,
+                type: 'sms',
+            });
+            if (session) {
+                router.push({pathname:"/login/password",params:{phoneNumber}});
+            } else {
+                setOtpValuesError('le code OTP est incorrect')
+                setOtpValues(['', '', '', '', '','']);
+                inputRefs.current[0]?.focus();
+                console.error('La vérification du OTP a échoué :', error);
+            }
+            // router.push({pathname:"/login/password",params:{phoneNumber}});
         } catch (error) {
             console.error('Erreur lors de la validation du code OTP :', error);
         }
@@ -86,6 +91,7 @@ export default function OTPScreen() {
                             />
                         ))}
                     </View>
+                    {otpValuesError ? <Text style={styles.errorText}>{passwordValuesError}</Text> : null}
                     <View style={styles.condition}>
                         <Text style={[styles.text, { color: textColor }]}>
                             Je n'ai pas reçu de code!  
@@ -132,6 +138,12 @@ const styles = StyleSheet.create({
         borderColor: 'gray',
         fontSize: 24,
         textAlign: 'center',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginTop: 30,
+        textAlign:'center',
     },
     text: {
         fontSize: 15,

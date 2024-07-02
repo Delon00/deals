@@ -107,6 +107,9 @@ export default function PasswordScreen() {
                     router.push('../(tabs)');
                 } else {
                     setPasswordValuesError('Mot de passe incorrect');
+                    // Réinitialiser les champs de mot de passe
+                    setPasswordValues(['', '', '', '']);
+                    inputRefs.current[0]?.focus(); // Mettre le focus sur le premier champ de mot de passe
                 }
             } else {
                 const { data, error } = await supabase
@@ -167,6 +170,8 @@ export default function PasswordScreen() {
                                 placeholder="*"
                                 placeholderTextColor={colorScheme === 'dark' ? '#888' : '#ccc'}
                                 secureTextEntry={true}
+                                textContentType="oneTimeCode"
+                                autoComplete="sms-otp"
                             />
                         ))}
                     </View>
@@ -235,22 +240,23 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         marginHorizontal: 50,
         paddingHorizontal: 80,
-        borderRadius: 15,
+        borderRadius:15,
     },
     buttonText: {
-        fontSize: 20,
+        color: 'white',
+        fontSize: 18,
         fontWeight: 'bold',
-        color: '#fff',
         textAlign: 'center',
     },
     label: {
-        fontSize: 16,
+        fontSize: 15,
         color: '#D3AF77',
         marginBottom: 5,
     },
     errorText: {
         color: 'red',
         fontSize: 14,
-        marginBottom: 10,
+        marginTop: 30,
+        textAlign:'center',
     },
 });
