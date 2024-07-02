@@ -26,6 +26,7 @@
     "@react-navigation/native-stack": "^6.9.26",
     "@rneui/themed": "^4.0.0-rc.8",
     "@supabase/supabase-js": "^2.44.2",
+    "bcryptjs": "^2.4.3",
     "expo": "~51.0.8",
     "expo-application": "~5.9.1",
     "expo-auth-session": "~5.5.2",
