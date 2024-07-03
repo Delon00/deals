@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { router,useLocalSearchParams } from 'expo-router'; // Assurez-vous d'importer router depuis 'expo-router'
-import { supabase } from '@/utils/supabase';
+import { supabase } from '@/lib/supabase';
 
 export default function OTPScreen() {
     const colorScheme = useColorScheme();

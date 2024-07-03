@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, useColorScheme, Text, Button, Alert, View, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, useColorScheme, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { HelloWave } from '@/components/HelloWave';
@@ -11,12 +11,16 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const textColor = colorScheme === 'dark' ? Colors.dark.text : Colors.light.text;
 
+  const navigateToSettings = () => {
+    router.push('settings');
+  };
+
   return (
     <>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           <ThemedText type="title">Bienvenue! <HelloWave /></ThemedText>
-          <TouchableOpacity onPress={() => router.push('settings')}>
+          <TouchableOpacity onPress={navigateToSettings}>
             <FontAwesome name="gear" size={25} color="white" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
@@ -46,7 +50,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e5e3e300',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     gap: 8,
   },
   recentText: {

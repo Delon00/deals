@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { router } from 'expo-router';
-import { supabase } from '@/utils/supabase';
+import { supabase } from '@/lib/supabase';
 
 export default function Login() {
     const colorScheme = useColorScheme();
