@@ -15,7 +15,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devcci.deals",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Cette application utilise Face ID pour vous authentifier."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +35,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-dev-launcher"
+      "expo-dev-launcher",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

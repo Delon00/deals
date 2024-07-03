@@ -8,18 +8,10 @@ interface RoundedShadowedBlockProps {
 
 export function Block({ children }: RoundedShadowedBlockProps) {
   const colorScheme = useColorScheme();
-
-  // Définir la couleur de fond en fonction du thème
   const backgroundColor = colorScheme === 'dark' ? '#1c1c1c' : '#fff';
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor },
-        styles.shadow,
-      ]}
-    >
+    <View style={[styles.container,{ backgroundColor },styles.shadow,]}>
       {children}
     </View>
   );
