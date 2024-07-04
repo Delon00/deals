@@ -26,11 +26,11 @@ export default function IndexScreen() {
               }
             } else {
               console.warn('No biometrics saved');
-              // Optionally handle the case where no biometrics are saved
+                router.push('pin');
             }
           } else {
             console.warn('Biometric hardware not available');
-            // Optionally handle the case where biometric hardware is not available
+            router.push('pin');
           }
         } else {
           router.push('/start');

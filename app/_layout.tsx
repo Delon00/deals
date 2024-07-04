@@ -16,6 +16,7 @@ export default function RootLayout() {
     Lexend: require('../assets/fonts/Lexend-Regular.ttf'),
     LexendBold: require('../assets/fonts/Lexend-Bold.ttf'),
     redRoseBold: require('../assets/fonts/RedRose-Bold.ttf'),
+    redRose: require('../assets/fonts/RedRose-Bold.ttf'),
   });
 
   useEffect(() => {
@@ -37,6 +38,7 @@ export default function RootLayout() {
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="pin" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        {/* <Stack.Screen name="modal-forgetpsw"options={{presentation: 'modal',headerShown: false}}/> */}
       </Stack>
     </ThemeProvider>
   );
