@@ -3,8 +3,10 @@ import { StyleSheet,useColorScheme, ImageBackground, Platform,View, Text,Touchab
 import { HelloWave } from '@/components/HelloWave';
 import { ThemedText } from '@/components/ThemedText';
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import {router} from 'expo-router';
+import { BlurView } from 'expo-blur';
 
 
 
@@ -18,28 +20,29 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.container}>
 
-      <View style={styles.header}>
+    <View style={styles.header}>
         <View style={styles.titleContainer}>
           <ThemedText type="title">Bienvenue! <HelloWave /></ThemedText>
           <TouchableOpacity onPress={navigateToSettings}>
             <FontAwesome name="gear" size={25} color="white" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
+        <BlurView intensity={60} style={styles.glassContainer}>
+          <Text style={[styles.text]}>Montant verrouillé</Text>
+          <FontAwesome5 name="lock" size={24} color="gold" />
+        </BlurView>
         <View>
-          <Text style={[styles.amount , { color: textColor }]}>35.000f</Text>
+          <Text style={[styles.amount , { color: '#fff' }]}>35.000f</Text>
         </View>
       </View>
 
       <View style={[styles.cardTransaction,styles.cardVendre]}>
-        <ImageBackground source={require('@/assets/images/bg-sell.jpg')} resizeMode="cover" style={styles.bgImg}>
+
           <Text></Text>
-        </ImageBackground>
       </View>
 
-      <View style={[styles.cardTransaction,styles.cardVendre]}>
-        <ImageBackground source={require('@/assets/images/bg-buy.jpg')} resizeMode="cover" style={styles.bgImg}>
+      <View style={[styles.cardTransaction,styles.cardbuy]}>
           <Text></Text>
-        </ImageBackground>
       </View>
     </View>
   );
@@ -58,23 +61,27 @@ const styles = StyleSheet.create({
       android: {elevation: 5,},}),
     borderRadius:20,
     flexDirection: 'column',
-    width:'100%',
+    width:'95%',
     overflow:'hidden',
     borderStyle:'solid',
     borderWidth:1,
-    borderColor:'#fff',
+    borderColor:'#a4a4a44e',
     backgroundColor:'red',
+    marginLeft:'auto',
+    marginRight:'auto',
   },
   cardVendre:{
-
+    backgroundColor:'#143952',
+    height:210,
   },
-  bgImg:{
-    padding:100,
+  cardbuy:{
+    backgroundColor:'#9FBBCC',
+    height:210,
   },
   header: {
     paddingHorizontal: 15,
     paddingVertical: 60,
-    height: '30%',
+    height: '31%',
     backgroundColor: '#D3AF77',
     borderTopRightRadius: 0,
     borderTopLeftRadius: 0,
@@ -104,4 +111,50 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     textAlign:'center',
   },
+  glassContainer:{
+    width:'60%',
+    backgroundColor:'',
+    marginTop:10,
+    borderRadius:30,
+    padding:5,
+    overflow:'hidden',
+    alignSelf:'center',
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    gap:20,
+  },
+  transaccontainer:{
+    flexDirection:'row',
+    alignItems:'center',
+    width:'100%',
+    justifyContent:'center',
+    gap:50,
+  },
+  text:{
+    color: '#fff',
+    fontSize:17,
+    textAlign:'center',
+  },
+  btntext:{
+    color: '#000',
+    fontSize:18,
+  },
+  btnsell:{
+    flexDirection:'row',
+    padding:5,
+    width:130,
+    backgroundColor:'#fff',
+    borderRadius:30,
+    justifyContent:'center',
+
+  },
+  btnbuy:{
+    flexDirection:'row',
+    padding:5,
+    width:130,
+    backgroundColor:'#fff',
+    borderRadius:30,
+    justifyContent:'center',
+  }
 });

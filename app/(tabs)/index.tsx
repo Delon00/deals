@@ -1,11 +1,13 @@
 import { Image, StyleSheet, useColorScheme, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { HelloWave } from '@/components/HelloWave';
 import { ThemedText } from '@/components/ThemedText';
 import { Block } from '@/components/Block';
 import { Colors } from '@/constants/Colors';
 import { router } from 'expo-router';
+import { BlurView } from 'expo-blur';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 export default function HomeScreen() {
@@ -25,8 +27,16 @@ export default function HomeScreen() {
             <FontAwesome name="gear" size={25} color="white" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
+        <BlurView intensity={60} style={styles.glassContainer}>
+          <Text style={[styles.text]}>Montant verrouillé</Text>
+          <FontAwesome5 name="lock" size={24} color="gold" />
+        </BlurView>
         <View>
-          <Text style={[styles.amount , { color: textColor }]}>35.000f</Text>
+          <Text style={[styles.amount , { color: '#fff' }]}>35.000f</Text>
+        </View>
+        <View style={[styles.transaccontainer]}>
+            <View style={[styles.btnsell]}><Text style={[styles.btntext]} >Vendre</Text></View>
+            <View style={[styles.btnbuy]}><Text style={[styles.btntext]}>Acheter</Text></View>
         </View>
       </View>
 
@@ -42,7 +52,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 15,
     paddingVertical: 60,
-    height: '30%',
+    height: '31%',
     backgroundColor: '#D3AF77',
     borderTopRightRadius: 0,
     borderTopLeftRadius: 0,
@@ -83,4 +93,50 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     textAlign:'center',
   },
+  glassContainer:{
+    width:'60%',
+    backgroundColor:'',
+    marginTop:10,
+    borderRadius:30,
+    padding:5,
+    overflow:'hidden',
+    alignSelf:'center',
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+    gap:20,
+  },
+  transaccontainer:{
+    flexDirection:'row',
+    alignItems:'center',
+    width:'100%',
+    justifyContent:'center',
+    gap:50,
+  },
+  text:{
+    color: '#fff',
+    fontSize:17,
+    textAlign:'center',
+  },
+  btntext:{
+    color: '#000',
+    fontSize:18,
+  },
+  btnsell:{
+    flexDirection:'row',
+    padding:5,
+    width:130,
+    backgroundColor:'#fff',
+    borderRadius:30,
+    justifyContent:'center',
+
+  },
+  btnbuy:{
+    flexDirection:'row',
+    padding:5,
+    width:130,
+    backgroundColor:'#fff',
+    borderRadius:30,
+    justifyContent:'center',
+  }
 });
