@@ -30,11 +30,8 @@ const styles = StyleSheet.create({
   shadow: {
     ...Platform.select({
       ios: {
-        shadowColor: '#000', // Couleur de l'ombre
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3,
       },

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Modal,Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Modal, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/lib/supabase';
 import * as Crypto from 'expo-crypto';
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export default PinCodeScreen = () => {
     const [pin, setPin] = useState(['', '', '', '']);
@@ -82,6 +83,36 @@ export default PinCodeScreen = () => {
         }
     };
 
+    useEffect(() => {
+        const biometricLogin = async () => {
+            try {
+                const isBiometricAvailable = await LocalAuthentication.hasHardwareAsync();
+                if (isBiometricAvailable) {
+                    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
+                    if (savedBiometrics) {
+                        const result = await LocalAuthentication.authenticateAsync({
+                            promptMessage: 'Connexion à Deals',
+                            fallbackLabel: 'Entrez votre mot de passe',
+                            disableDeviceFallback: Platform.OS === 'ios' ? true : false,
+                        });
+                        if (result.success) {
+                            router.push('/(tabs)');
+                        } else {
+                            console.log('Biometric authentication failed');
+                        }
+                    } else {
+                        console.log('No biometrics saved');
+                    }
+                } else {
+                    console.log('Biometric hardware not available');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification de la session:', error);
+            }
+        };
+        biometricLogin();
+    }, []);
+
     return (
         <View style={styles.container}>
             <Text style={styles.logoText}>Deals</Text>
@@ -123,9 +154,7 @@ export default PinCodeScreen = () => {
                 </View>
                 <View style={styles.digitRow}>
                     {[7, 8, 9].map((digit) => (
-                        <TouchableOpacity
-                            key={digit}
-                            style={styles.pinButton}
+                        <TouchableOpacity key={digit} style={styles.pinButton}
                             onPress={() => handleDigitPress(String(digit))}
                         >
                             <Text style={styles.pinButtonText}>{digit}</Text>
@@ -137,7 +166,7 @@ export default PinCodeScreen = () => {
                         <Text style={styles.pinButtonText}>0</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress}>
-                        <Feather name="delete" size={25} color="white" />
+                        <Feather name="delete" size={30} color="black" />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -145,7 +174,7 @@ export default PinCodeScreen = () => {
                 <Text style={styles.textforgetpsw}>mot de passe oublié</Text>
             </TouchableOpacity>
 
-            <Modal animationType="slide"transparent={true}visible={modalVisible}onRequestClose={() => setModalVisible(false)}>
+            <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.titleContainer}>
@@ -155,7 +184,7 @@ export default PinCodeScreen = () => {
                             </TouchableOpacity>
                         </View>
                         <View style={styles.modalBody}>
-                            <Text style={styles.modalText}>Indisponible pour le  moment.</Text>
+                            <Text style={styles.modalText}>Indisponible pour le moment.</Text>
                         </View>
                     </View>
                 </View>
@@ -202,7 +231,7 @@ const styles = StyleSheet.create({
     pinDot: {
         width: 25,
         height: 25,
-        borderRadius: '100%',
+        borderRadius: 100,
         marginHorizontal: 10,
         backgroundColor: '#cbbda6',
     },
@@ -216,7 +245,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     digitRowZero: {
-        marginHorizontal: 40,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        paddingHorizontal: 65,
         width: '100%',
     },
     pinButton: {
@@ -234,13 +266,9 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     deleteButton: {
-        backgroundColor: '#e74c3c',
-        width: 50,
-        borderRadius: 15,
-        height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 20,
+        marginLeft: 39,
     },
     deleteButtonText: {
         fontSize: 18,
@@ -281,7 +309,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         color: '#fff',
         fontSize: 20,
-        fontWeight:'bold',
+        fontWeight: 'bold',
     },
     modalBody: {
         marginTop: 20,

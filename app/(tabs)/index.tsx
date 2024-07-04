@@ -6,6 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { Block } from '@/components/Block';
 import { Colors } from '@/constants/Colors';
 import { router } from 'expo-router';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -24,7 +25,11 @@ export default function HomeScreen() {
             <FontAwesome name="gear" size={25} color="white" style={{ marginLeft: 10 }} />
           </TouchableOpacity>
         </View>
+        <View>
+          <Text style={[styles.amount , { color: textColor }]}>35.000</Text>
+        </View>
       </View>
+
       <Block>
         <Text style={[styles.titleTransaction, { color: textColor }]}>Transaction</Text>
         <Text style={[styles.ZeroTransac, { color: textColor }]}>Vous n'avez aucune transaction</Text>
@@ -39,6 +44,8 @@ const styles = StyleSheet.create({
     paddingVertical: 60,
     height: '30%',
     backgroundColor: '#D3AF77',
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 0,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -69,5 +76,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     marginTop: 120,
     marginBottom: 120,
+  },
+  amount:{
+    fontFamily:'Lexend',
+    fontSize:50,
+    fontWeight:'bold',
+    textAlign:'center',
   },
 });

@@ -15,7 +15,6 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devcci.deals",
-      "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Cette application utilise Face ID pour vous authentifier."
       }
@@ -39,7 +38,7 @@
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+          "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID to acces to dasboard"
         }
       ]
     ],

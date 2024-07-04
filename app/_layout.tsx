@@ -17,6 +17,7 @@ export default function RootLayout() {
     LexendBold: require('../assets/fonts/Lexend-Bold.ttf'),
     redRoseBold: require('../assets/fonts/RedRose-Bold.ttf'),
     redRose: require('../assets/fonts/RedRose-Bold.ttf'),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
