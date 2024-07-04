@@ -26,7 +26,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={[styles.amount , { color: textColor }]}>35.000</Text>
+          <Text style={[styles.amount , { color: textColor }]}>35.000f</Text>
         </View>
       </View>
 
