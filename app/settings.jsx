@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Alert, useColorScheme, Platform,Pressable,Modal } from 'react-native';
+import { StyleSheet, View, Text, Alert, useColorScheme, Platform, Pressable, Modal } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
@@ -19,15 +20,17 @@ export default function SettingsScreen() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalBackgroundVisible, setModalBackgroundVisible] = useState(false);
 
     const handlePress = () => {
+        setModalBackgroundVisible(true);
         setModalVisible(true);
     };
 
     const handleThemeSelection = (theme) => {
-        // Logique pour changer le thème de l'application
         console.log(`Thème sélectionné : ${theme}`);
         setModalVisible(false);
+        setModalBackgroundVisible(false);
     };
 
     useEffect(() => {
@@ -95,7 +98,7 @@ export default function SettingsScreen() {
                     <Ionicons name="arrow-back" size={24} color={textColor} style={styles.icon} />
                     <Text style={[styles.title, { color: textColor }]}>Paramètres</Text>
                 </Pressable>
-            <Text style={[styles.labelBloc, { color: textColor }]}>Chargement des informations...</Text>
+                <Text style={[styles.labelBloc, { color: textColor }]}>Chargement des informations...</Text>
             </View>
         );
     }
@@ -148,10 +151,10 @@ export default function SettingsScreen() {
             <Text style={[styles.labelBloc, { color: textColor }]}>Application</Text>
             <View style={[styles.bloc, { backgroundColor: backgroundBlocColor }]}>
                 <View style={styles.rowBloc}>
-                    <View style={styles.rowLeft}>
+                    <Pressable style={styles.rowLeft} onPress={handlePress}>
                         <Ionicons name="sunny" size={24} color={textColor} style={styles.icon} />
                         <Text style={[styles.labelText, { color: textColor }]}>Theme de l'app.</Text>
-                    </View>
+                    </Pressable>
                     <Pressable style={styles.button} onPress={handlePress}>
                         <Text style={[styles.labelText, { color: textColor }]}></Text>
                         <FontAwesome name="chevron-right" size={15} color={textColor} style={[styles.icon,styles.detailText]} />
@@ -174,30 +177,27 @@ export default function SettingsScreen() {
                     </Pressable>
                 </View>
             </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
+            
+            {modalBackgroundVisible && (
+                <Pressable style={styles.modalBackground} onPress={() => { setModalVisible(false); setModalBackgroundVisible(false); }} />
+            )}
+            
+            <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => { setModalVisible(false); setModalBackgroundVisible(false); }}>
                 <View style={styles.modalOverlay}>
                     <View style={[styles.modalContent,{ backgroundColor: backgroundBlocColor }]}>
-                        <Text style={[styles.modalTitle,{ color: textColor }]}>Choisir le thème</Text>
-                        <Pressable style={styles.modalButton} onPress={() => handleThemeSelection('system')}>
-                            <Text style={styles.modalButtonText}>Système</Text>
-                        </Pressable>
-                        <Pressable style={styles.modalButton} onPress={() => handleThemeSelection('light')}>
-                            <Text style={styles.modalButtonText}>Clair</Text>
-                        </Pressable>
-                        <Pressable style={styles.modalButton} onPress={() => handleThemeSelection('dark')}>
-                            <Text style={styles.modalButtonText}>Sombre</Text>
-                        </Pressable>
-                        <Pressable style={styles.modalCloseButton} onPress={() => setModalVisible(false)}>
-                            <Text style={styles.modalCloseButtonText}>Fermer</Text>
-                        </Pressable>
+                        <View style={styles.titleContainer}>
+                            <Text style={[styles.modalTitle,{ color: textColor }]}>Theme de l'application</Text>
+                            <Pressable onPress={() => { setModalVisible(false); setModalBackgroundVisible(false); }}>
+                                <Feather name="x" size={24} color={textColor} />
+                            </Pressable>
+                        </View>
+                        <View style={styles.modalBody}>
+                            <Text style={[styles.modalText,{ color: textColor }]}>Indisponible pour le moment.</Text>
+                        </View>
                     </View>
                 </View>
             </Modal>
+            
         </View>
     );
 }
@@ -270,15 +270,17 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: 'flex-end',
+    },
+    modalBackground: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width: '80%',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
@@ -290,34 +292,30 @@ const styles = StyleSheet.create({
                 elevation: 5,
             },
         }),
+        height: '30%',
+        width: '100%',
+        backgroundColor: '#25292e',
+        borderTopRightRadius: 25,
+        borderTopLeftRadius: 25,
+        paddingHorizontal: 20,
+        paddingVertical: 15,
+    },
+    titleContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     modalTitle: {
-        fontSize: 18,
-        marginBottom: 20,
+        color: '#fff',
+        fontSize: 20,
+        fontWeight: 'bold',
     },
-    modalButton: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        width:110,
-        marginVertical: 10,
-        borderRadius: 5,
-        backgroundColor: '#D3AF77',
-    },
-    modalButtonText: {
-        fontSize: 16,
-        color: 'white',
-        textAlign:'center',
-    },
-    modalCloseButton: {
+    modalBody: {
         marginTop: 20,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        backgroundColor: '#ff4d4d',
     },
-    modalCloseButtonText: {
+    modalText: {
+        color: '#fff',
         fontSize: 16,
-        color: 'white',
     },
 
 });

@@ -1,4 +1,4 @@
-import { Image, StyleSheet, useColorScheme, Text, View, TouchableOpacity } from 'react-native';
+import { ScrollView , StyleSheet, useColorScheme, Text, View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -40,10 +40,12 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <Block>
-        <Text style={[styles.titleTransaction, { color: textColor }]}>Transaction</Text>
-        <Text style={[styles.ZeroTransac, { color: textColor }]}>Vous n'avez aucune transaction</Text>
-      </Block>
+      <ScrollView>
+        <Block>
+          <Text style={[styles.titleTransaction, { color: textColor }]}>Transaction</Text>
+          <Text style={[styles.ZeroTransac, { color: textColor }]}>Vous n'avez aucune transaction</Text>
+        </Block>
+      </ScrollView>
     </>
   );
 }
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 15,
     paddingVertical: 60,
-    height: '31%',
+    height: '35%',
     backgroundColor: '#D3AF77',
     borderTopRightRadius: 0,
     borderTopLeftRadius: 0,
@@ -98,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor:'',
     marginTop:10,
     borderRadius:30,
-    padding:5,
+    paddingVertical:2,
     overflow:'hidden',
     alignSelf:'center',
     flexDirection:'row',

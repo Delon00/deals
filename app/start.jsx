@@ -52,17 +52,17 @@ const styles = StyleSheet.create({
   },
   button: {
     position: 'absolute',
-    bottom: 60,
+    bottom: 50,
     backgroundColor: '#D3AF77',
     paddingVertical: 12,
-    paddingHorizontal: 100,
+    paddingHorizontal: 110,
     borderRadius: 15,
   },
   buttonText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
-    fontFamily: 'SpaceMono',
+    fontFamily: 'Lexend',
   },
   textLogin: {
     bottom: 40,

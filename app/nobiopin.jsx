@@ -1,66 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Modal, Platform } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/lib/supabase';
 import * as Crypto from 'expo-crypto';
-import * as LocalAuthentication from 'expo-local-authentication';
 
 export default PinCodeScreen = () => {
+    const params = useLocalSearchParams();
+    const { phoneNumber } = params;
     const [pin, setPin] = useState(['', '', '', '']);
+    const [pinError, setPinError] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
-    const [biometricType, setBiometricType] = useState(null);
-
-    useEffect(() => {
-        const checkBiometricType = async () => {
-            try {
-                const availableTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
-                if (availableTypes.length > 0) {
-                    const biometricType = availableTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)
-                        ? 'faceid'
-                        : availableTypes.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)
-                        ? 'fingerprint'
-                        : availableTypes.includes(LocalAuthentication.AuthenticationType.IRIS)
-                        ? 'iris'
-                        : 'unknown';
-                    setBiometricType(biometricType);
-                }
-            } catch (error) {
-                console.error('Erreur lors de la vérification du type biométrique:', error);
-            }
-        };
-
-        const biometricLogin = async () => {
-            try {
-                const isBiometricAvailable = await LocalAuthentication.hasHardwareAsync();
-                if (isBiometricAvailable) {
-                    const savedBiometrics = await LocalAuthentication.isEnrolledAsync();
-                    if (savedBiometrics) {
-                        const result = await LocalAuthentication.authenticateAsync({
-                            promptMessage: 'Connexion à Deals',
-                            fallbackLabel: 'Entrez votre mot de passe',
-                            disableDeviceFallback: Platform.OS === 'ios' ? true : false,
-                        });
-                        if (result.success) {
-                            router.push('/(tabs)');
-                        } else {
-                            console.log('Biometric authentication failed');
-                        }
-                    } else {
-                        console.log('No biometrics saved');
-                    }
-                } else {
-                    console.log('Biometric hardware not available');
-                }
-            } catch (error) {
-                console.error('Erreur lors de la vérification de la session:', error);
-            }
-        };
-
-        checkBiometricType();
-        biometricLogin();
-    }, []);
+    const inputRefs = useRef([]);
 
     const handleDigitPress = (digit) => {
         const newPin = [...pin];
@@ -87,74 +39,43 @@ export default PinCodeScreen = () => {
         }
     };
 
-    const handleBiometricPress = async () => {
-        try {
-            const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: 'Connexion à Deals',
-                fallbackLabel: 'Entrez votre mot de passe',
-                disableDeviceFallback: Platform.OS === 'ios' ? true : false,
-            });
-            if (result.success) {
-                router.push('/(tabs)');
-            } else {
-                console.log('Biometric authentication failed');
-            }
-        } catch (error) {
-            console.error('Erreur lors de l\'authentification biométrique:', error);
-        }
-    };
-
     const handleForgetPress = () => {
         setModalVisible(true);
     };
 
-    const validatePin = async (pin) => {
+    const validatePin = async (Password) => {
         try {
-            const userToken = await AsyncStorage.getItem('usertoken');
-            if (!userToken) {
-                alert('Utilisateur non connecté');
-                return;
-            }
-            const hashedPin = await Crypto.digestStringAsync(
+            const hashedPassword = await Crypto.digestStringAsync(
                 Crypto.CryptoDigestAlgorithm.SHA256,
-                pin
+                Password
             );
 
-            const { data, error } = await supabase
+            const { data: userData, error: userError } = await supabase
                 .from('users')
-                .select('password')
-                .eq('user_id', userToken)
+                .select('user_id, password')
+                .eq('userphone', phoneNumber)
                 .single();
 
-            if (error) {
-                alert('Erreur lors de la récupération du mot de passe');
+            if (userError && userError.code !== 'PGRST116') {
+                console.error('Erreur lors de la vérification de l\'utilisateur:', userError.message);
                 return;
             }
 
-            const storedPin = data.password;
-            const isValid = hashedPin === storedPin;
-
-            if (isValid) {
-                router.push('/(tabs)');
+            if (userData) {
+                if (userData.password === hashedPassword) {
+                    await AsyncStorage.setItem('usertoken', userData.user_id);
+                    setPin(['', '', '', '']);
+                    inputRefs.current[0]?.focus();
+                    router.push('/(tabs)'); // Correction: 'tabs' au lieu de '(tabs)'
+                } else {
+                    alert('Mot de passe incorrect');
+                    setPin(['', '', '', '']);
+                }
             } else {
-                alert('Mot de passe incorrect');
-                setPin(['', '', '', '']);
+                console.error('Utilisateur non trouvé.');
             }
         } catch (error) {
             console.error('Erreur:', error);
-        }
-    };
-
-    const getBiometricImage = () => {
-        switch (biometricType) {
-            case 'faceid':
-                return require('@/assets/images/faceid.png');
-            case 'fingerprint':
-                return require('@/assets/images/fingerprint.png');
-            case 'iris':
-                return require('@/assets/images/iris.png');
-            default:
-                return require('@/assets/images/faceid.png');
         }
     };
 
@@ -163,6 +84,7 @@ export default PinCodeScreen = () => {
             <Text style={styles.logoText}>Deals</Text>
             <Image source={require('@/assets/images/cadenas.png')} style={styles.logo} />
             <Text style={styles.title}>Entrez votre mot de passe</Text>
+            {pinError ? <Text style={styles.errorText}>{pinError}</Text> : null}
             <View style={styles.pinIndicatorContainer}>
                 {pin.map((_, index) => (
                     <View
@@ -174,6 +96,7 @@ export default PinCodeScreen = () => {
                     />
                 ))}
             </View>
+
             <View style={styles.pinContainer}>
                 <View style={styles.digitRow}>
                     {[1, 2, 3].map((digit) => (
@@ -199,7 +122,9 @@ export default PinCodeScreen = () => {
                 </View>
                 <View style={styles.digitRow}>
                     {[7, 8, 9].map((digit) => (
-                        <TouchableOpacity key={digit} style={styles.pinButton}
+                        <TouchableOpacity
+                            key={digit}
+                            style={styles.pinButton}
                             onPress={() => handleDigitPress(String(digit))}
                         >
                             <Text style={styles.pinButtonText}>{digit}</Text>
@@ -207,19 +132,16 @@ export default PinCodeScreen = () => {
                     ))}
                 </View>
                 <View style={[styles.digitRow, styles.digitRowZero]}>
-                    <TouchableOpacity style={styles.pinButton} onPress={handleBiometricPress}>
-                        <Image source={getBiometricImage()} style={styles.faceid} />
-                    </TouchableOpacity>
                     <TouchableOpacity style={styles.pinButton} onPress={() => handleDigitPress('0')}>
                         <Text style={styles.pinButtonText}>0</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.deleteButton, styles.pinButton]} onPress={handleDeletePress}>
+                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePress}>
                         <Feather name="delete" size={30} color="black" />
                     </TouchableOpacity>
                 </View>
             </View>
             <TouchableOpacity style={styles.btnforgetpsw} onPress={handleForgetPress}>
-                <Text style={styles.textforgetpsw}>mot de passe oublié</Text>
+                <Text style={styles.textforgetpsw}>Mot de passe oublié</Text>
             </TouchableOpacity>
 
             <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -258,7 +180,7 @@ const styles = StyleSheet.create({
     logo: {
         height: 90,
         width: 90,
-        objectFit: 'cover',
+        resizeMode: 'cover',
         marginTop: 10,
         marginBottom: 50,
     },
@@ -294,22 +216,19 @@ const styles = StyleSheet.create({
     },
     digitRowZero: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignContent:'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
-        paddingHorizontal: 60,
+        paddingHorizontal: 65,
         width: '100%',
     },
     pinButton: {
         width: 60,
         height: 60,
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 6,
         marginHorizontal: 30,
-    },
-    pinButtonzero: {
-
     },
     pinButtonText: {
         fontSize: 30,
@@ -319,10 +238,7 @@ const styles = StyleSheet.create({
     deleteButton: {
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    deleteButtonText: {
-        fontSize: 18,
-        color: '#fff',
+        marginLeft: 39,
     },
     btnforgetpsw: {
         marginTop: 20,
@@ -368,9 +284,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
     },
-    faceid: {
-        width: 40,
-        height: 40,
-    },
+    errorText:{
+        color:'red',
+    }
 });
-

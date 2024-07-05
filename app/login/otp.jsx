@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable, Linking } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { StyleSheet, TextInput, Text, View, TouchableWithoutFeedback, Keyboard, useColorScheme, Pressable } from 'react-native';
 import { Colors } from '@/constants/Colors';
-import { router,useLocalSearchParams } from 'expo-router'; // Assurez-vous d'importer router depuis 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 
 export default function OTPScreen() {
@@ -12,29 +12,59 @@ export default function OTPScreen() {
     const { phoneNumber } = params;
     const formattedPhoneNumber = `+225${phoneNumber}`;
 
-    const [otpValues, setOtpValues] = useState(['', '', '', '', '','']);
+    const [otpValues, setOtpValues] = useState(['', '', '', '', '', '']);
     const [otpValuesError, setOtpValuesError] = useState('');
     const inputRefs = useRef([]);
+    useEffect(() => {
 
+    }, [phoneNumber]);
     const confirmCode = async () => {
+        const checkUserExists = async () => {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('nom, prenom')
+                    .eq('userphone', phoneNumber)
+                    .single();
+                if (error && error.code !== 'PGRST116') {
+                    console.error('Erreur lors de la vérification de l\'utilisateur:', error.message);
+                    return false;
+                }
+                return data ? true : false;
+            } catch (error) {
+                console.error('Erreur lors de la vérification de l\'utilisateur:', error.message);
+                return false;
+            }
+        };
+        const userExists = await checkUserExists();
         try {
             // const otpCode = otpValues.join('');
+            // const userExists = await checkUserExists();
             // const { data: { session }, error } = await supabase.auth.verifyOtp({
             //     phone: formattedPhoneNumber,
             //     token: otpCode,
             //     type: 'sms',
             // });
             // if (session) {
-            //     router.push({pathname:"/login/password",params:{phoneNumber}});
+            // if (!userExists) {
+            //     router.push({ pathname: "/login/password", params: { phoneNumber } });
             // } else {
-            //     setOtpValuesError('le code OTP est incorrect')
-            //     setOtpValues(['', '', '', '', '','']);
+            //     router.push({ pathname: "/nobiopin", params: { phoneNumber } });
+            // }
+            // } else {
+            //     setOtpValuesError('Le code OTP est incorrect');
+            //     setOtpValues(['', '', '', '', '', '']);
             //     inputRefs.current[0]?.focus();
             //     console.error('La vérification du OTP a échoué :', error);
             // }
-            router.push({pathname:"/login/password",params:{phoneNumber}});
+            if (!userExists) {
+                router.push({ pathname: "/login/password", params: { phoneNumber } });
+            } else {
+                router.push({ pathname: "/nobiopin", params: { phoneNumber } });
+            }
         } catch (error) {
             console.error('Erreur lors de la validation du code OTP :', error);
+            setOtpValuesError('Erreur lors de la validation du code OTP.');
         }
     };
 
@@ -44,7 +74,6 @@ export default function OTPScreen() {
             updatedOtpValues[index] = value;
             setOtpValues(updatedOtpValues);
 
-            // Déplacer le focus vers le champ suivant ou précédent en fonction de l'action
             if (value !== '') {
                 if (index < otpValues.length - 1) {
                     inputRefs.current[index + 1]?.focus();
@@ -59,14 +88,16 @@ export default function OTPScreen() {
 
     const handleResendCode = async () => {
         try {
-            const { error } = await supabase.auth.sendOtp({ phone: phoneNumber });
+            const { error } = await supabase.auth.sendOtp({ phone: formattedPhoneNumber });
             if (error) {
                 console.error('Erreur lors de l\'envoi du code OTP :', error);
+                setOtpValuesError('Erreur lors de l\'envoi du code OTP.');
             } else {
                 console.log('Code OTP renvoyé avec succès.');
             }
         } catch (error) {
             console.error('Erreur lors de l\'envoi du code OTP :', error);
+            setOtpValuesError('Erreur lors de l\'envoi du code OTP.');
         }
     };
 
@@ -91,7 +122,7 @@ export default function OTPScreen() {
                             />
                         ))}
                     </View>
-                    {otpValuesError ? <Text style={styles.errorText}>{passwordValuesError}</Text> : null}
+                    {otpValuesError ? <Text style={styles.errorText}>{otpValuesError}</Text> : null}
                     <View style={styles.condition}>
                         <Text style={[styles.text, { color: textColor }]}>
                             Je n'ai pas reçu de code!  
@@ -143,7 +174,7 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
         marginTop: 30,
-        textAlign:'center',
+        textAlign: 'center',
     },
     text: {
         fontSize: 15,
@@ -157,7 +188,7 @@ const styles = StyleSheet.create({
     button: {
         backgroundColor: '#D3AF77',
         paddingVertical: 12,
-        marginHorizontal: 50,
+        marginHorizontal: 30,
         paddingHorizontal: 80,
         borderRadius: 15,
     },

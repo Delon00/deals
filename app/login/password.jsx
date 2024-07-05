@@ -23,38 +23,7 @@ export default function PasswordScreen() {
     const [userExists, setUserExists] = useState(false);
     const inputRefs = useRef([]);
 
-    useEffect(() => {
-        const checkUserExists = async () => {
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('nom, prenom')
-                    .eq('userphone', phoneNumber)
-                    .single();
 
-                if (error && error.code !== 'PGRST116') {
-                    console.error('Erreur lors de la vérification de l\'utilisateur:', error.message);
-                    return;
-                }
-
-                if (!data) {
-                    setUserExists(false);
-                    setNom('');
-                    setPrenom('');
-                } else {
-                    setUserExists(true);
-                    setNom(data.nom || '');
-                    setPrenom(data.prenom || '');
-                }
-            } catch (error) {
-                console.error('Erreur lors de la vérification de l\'utilisateur:', error.message);
-            }
-        };
-
-        if (phoneNumber) {
-            checkUserExists();
-        }
-    }, [phoneNumber]);
 
     const handleTextChange = (index, value) => {
         if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -117,7 +86,6 @@ export default function PasswordScreen() {
 
             if (userData) {
                 if (userData.password === hashedPassword) {
-                    console.log('Connexion réussie');
                     await AsyncStorage.setItem('usertoken', userData.user_id);
                     router.push('../(tabs)');
                 } else {
@@ -152,9 +120,8 @@ export default function PasswordScreen() {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={[styles.main, { backgroundColor }]}>
                 <View style={styles.middle}>
-                    <Text style={styles.middleTitle}>{!userExists ? 'Inscription d\'un nouvel utilisateur' : 'Entrez votre mot de passe'}</Text>
-                    <Text style={[styles.middleText, { color: textColor }]}>{!userExists ? 'Veuillez compléter les informations ci-dessous pour créer votre compte.' : 'Veuillez entrez votre mot de passe afin de vous connecter'}</Text>
-                    {!userExists && (
+                    <Text style={styles.middleTitle}>Inscription d'un nouvel utilisateur</Text>
+                    <Text style={[styles.middleText, { color: textColor }]}>Veuillez compléter les informations ci-dessous pour créer votre compte</Text>
                         <View style={styles.inputContainer}>
                             <Text style={styles.label}>Nom:</Text>
                             <TextInput style={[styles.textInput, { color: textColor, borderColor: textColor }]}
@@ -173,8 +140,7 @@ export default function PasswordScreen() {
                             />
                             {prenomError ? <Text style={styles.errorText}>{prenomError}</Text> : null}
                         </View>
-                    )}
-                    <Text style={styles.label}>{!userExists ? 'Créez votre mot de passe à 4 chiffres' : 'Entrez votre mot de passe à 4 chiffres'}</Text>
+                    <Text style={styles.label}>Créez votre mot de passe à 4 chiffres</Text>
                     <View style={styles.passwordContainer}>
                         {passwordValues.map((value, index) => (
                             <TextInput

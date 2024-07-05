@@ -38,6 +38,7 @@ export default function RootLayout() {
         <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen name="settings" options={{ headerShown: false }} />
         <Stack.Screen name="pin" options={{ headerShown: false }} />
+        <Stack.Screen name="nobiopin" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         {/* <Stack.Screen name="modal-forgetpsw"options={{presentation: 'modal',headerShown: false}}/> */}
       </Stack>
