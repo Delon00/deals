@@ -131,7 +131,7 @@ export default PinCodeScreen = () => {
                         </TouchableOpacity>
                     ))}
                 </View>
-                <View style={[styles.digitRow, styles.digitRowZero]}>
+                <View style={[ styles.digitRowZero]}>
                     <TouchableOpacity style={styles.pinButton} onPress={() => handleDigitPress('0')}>
                         <Text style={styles.pinButtonText}>0</Text>
                     </TouchableOpacity>
@@ -216,10 +216,8 @@ const styles = StyleSheet.create({
     },
     digitRowZero: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 65,
-        width: '100%',
     },
     pinButton: {
         width: 60,
@@ -240,9 +238,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: 39,
     },
-    btnforgetpsw: {
-        marginTop: 20,
-    },
+    btnforgetpsw: {marginBottom:30,},
     modalOverlay: {
         flex: 1,
         justifyContent: 'flex-end',

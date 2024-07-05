@@ -37,7 +37,6 @@ export default function TabTwoScreen() {
       </View>
 
       <View style={[styles.cardTransaction,styles.cardVendre]}>
-
           <Text></Text>
       </View>
 

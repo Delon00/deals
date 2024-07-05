@@ -206,7 +206,7 @@ export default PinCodeScreen = () => {
                         </TouchableOpacity>
                     ))}
                 </View>
-                <View style={[styles.digitRow, styles.digitRowZero]}>
+                <View style={[styles.digitRowZero]}>
                     <TouchableOpacity style={styles.pinButton} onPress={handleBiometricPress}>
                         <Image source={getBiometricImage()} style={styles.faceid} />
                     </TouchableOpacity>
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: '#f0f0f0',
-        paddingBottom: 50,
+        paddingBottom: 10,
     },
     logoText: {
         fontFamily: 'redRoseBold',
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     },
     textforgetpsw: {
         color: '#D3AF77',
-        fontSize: 20,
+        fontSize: 18,
     },
     pinIndicatorContainer: {
         flexDirection: 'row',
@@ -290,15 +290,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 10,
+        marginBottom: 10, 
     },
     digitRowZero: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignContent:'center',
+        justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 60,
-        width: '100%',
     },
     pinButton: {
         width: 60,
@@ -324,9 +321,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#fff',
     },
-    btnforgetpsw: {
-        marginTop: 20,
-    },
+    btnforgetpsw: {marginBottom:30,},
     modalOverlay: {
         flex: 1,
         justifyContent: 'flex-end',
