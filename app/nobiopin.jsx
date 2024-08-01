@@ -216,8 +216,10 @@ const styles = StyleSheet.create({
     },
     digitRowZero: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         alignItems: 'center',
+        paddingHorizontal:65,
+        width:'100%'
     },
     pinButton: {
         width: 60,

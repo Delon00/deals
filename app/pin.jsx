@@ -305,9 +305,7 @@ const styles = StyleSheet.create({
         marginVertical: 6,
         marginHorizontal: 30,
     },
-    pinButtonzero: {
 
-    },
     pinButtonText: {
         fontSize: 30,
         fontWeight: 'bold',
