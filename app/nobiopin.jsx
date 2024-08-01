@@ -66,7 +66,7 @@ export default PinCodeScreen = () => {
                     await AsyncStorage.setItem('usertoken', userData.user_id);
                     setPin(['', '', '', '']);
                     inputRefs.current[0]?.focus();
-                    router.push('/(tabs)'); // Correction: 'tabs' au lieu de '(tabs)'
+                    router.push('/(tabs)');
                 } else {
                     alert('Mot de passe incorrect');
                     setPin(['', '', '', '']);
