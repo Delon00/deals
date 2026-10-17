@@ -7,11 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#000000"
-    },
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devcci.deals",
@@ -41,7 +37,15 @@
           "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID to acces to dasboard"
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen", 
+      {
+        "image": "./assets/images/splash.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#000000"
+      }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
